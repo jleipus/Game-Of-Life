@@ -1,5 +1,5 @@
 # Conways Game Of Life
-[Conways Game Of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns) written in C++ witha a Qt5 based GUI.
+[Conways Game Of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns) written in C++ with a Qt5 based GUI.
 
 ###### How to run:
 1) Compile through console "*g++ Game.cpp main.cpp -o run*"
