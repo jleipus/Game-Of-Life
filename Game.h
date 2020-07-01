@@ -8,27 +8,21 @@ using namespace std;
 class Game
 {
     public:
-        Game();
+        Game(int _boardSize, int _tickspeed);
         virtual ~Game();
-
-    protected:
-
+		
     private:
         int boardSize;
+		int tickspeed;
 
-        vector < vector < int > > data;
-        vector < vector < int > > neighbourData;
+        vector < vector < int > > data; // need to replace with more memmory efficient and faster option
+        vector < vector < int > > nextData;
 
         void init();
         void loop();
 
-        void update();
         void draw();
-
-        void determineFuture();
-
-        void calculateNeighbours();
-        void printNeighbours();
+        void update();
 
 };
 

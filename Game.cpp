@@ -8,136 +8,117 @@
 
 using namespace std;
 
-Game::Game() {
-
-    init();
+Game::Game(int _boardSize, int _tickspeed) {
+	boardSize = _boardSize + 2; // two extra rows and columns are added at the edges to simplify calculation
+	tickspeed = _tickspeed;
+	
+    	init();
 }
 
 Game::~Game() {
-    //dtor
+    	//dtor
 }
 
 void Game::init() {
-    boardSize = 20;
-
-    data.resize(boardSize);
+	// initialization of both arrays to specified size
+    	data.resize(boardSize);
 	for(int i = 0; i < boardSize; ++i) {
 		data[i].resize(boardSize);
 	}
 
-	neighbourData.resize(boardSize);
+	nextData.resize(boardSize);
 	for(int i = 0; i < boardSize; ++i) {
-		neighbourData[i].resize(boardSize);
+		nextData[i].resize(boardSize);
 	}
 
 	data = {
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0},
-	{0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0},
-	{0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0},
-	{0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0},
-	{0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0},
-	{0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0},
-	{0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	};
+	nextData = data;
 
-    loop();
+    	loop();
 }
 
 void Game::loop() {
-    draw();
+	// tickspeed is provided in ticks/s, so frameCap 1000ms 
+	// divided by tickspeed giving the minimum time for each frame
+    	int frameCap = 1000 / tickspeed; 
 
-    int frameCap = 100;
+    	while(1) {
+		int frameStart = clock();
+        	system("cls"); // only works on Windows
 
-    while(1) {
-        int frameStart = clock();
-        system("cls");
-
-        update();
-        draw();
-
-        int frameTime = frameStart - clock();
-        if(frameTime < frameCap) {
-            Sleep(frameCap - frameTime);
-        }
-    }
-}
-
-void Game::update() {
-    calculateNeighbours();
-
-    determineFuture();
+		draw();
+        	update();
+        
+        	int frameTime = frameStart - clock();
+        	if(frameTime < frameCap) {
+           		 Sleep(frameCap - frameTime);
+        	}
+    	}
 }
 
 void Game::draw() {
-    cout << "\n\n";
-    for(int i = 1; i < boardSize - 1; i++) {
-        cout << "\t";
-        for(int j = 1; j < boardSize - 1; j++) {
-            if(data[i][j] == 1) {
-                cout << "x";
-            }
-            else {
-                cout << " ";
-            }
-        }
-        cout << "\n";
-    }
+	for(int i = 1; i < boardSize - 1; i++) {
+        	for(int j = 1; j < boardSize - 1; j++) {
+            		if(data[i][j] == 1) {
+		 		cout << "x";
+			} else {
+                		cout << " ";
+            		}
+        	}
+        	cout << "\n";
+    	}
 }
 
-void Game::determineFuture() {
-    for(int i = 1; i < boardSize - 1; i++) {
-        for(int j = 1; j < boardSize - 1; j++) {
-            if(data[i][j] == 1) {
-                if(neighbourData[i][j] < 2 || neighbourData[i][j] > 3) {
-                    data[i][j] = 0;
-                }
-            }
-            else {
-                if(neighbourData[i][j] == 3) {
-                    data[i][j] = 1;
-                }
-            }
-        }
-    }
+void Game::update() {
+	nextData = data;
+	
+    	for(int i = 1; i < boardSize - 1; i++) {
+        	for(int j = 1; j < boardSize - 1; j++) {
+            		int neighbours = 0;
+			
+			// total number of "live" neighbouring cells is counted
+            		if(data[i-1][j-1] == 1) { neighbours++; }
+            		if(data[i-1][j] == 1) { neighbours++; }
+            		if(data[i-1][j+1] == 1) { neighbours++; }
+
+            		if(data[i][j-1] == 1) { neighbours++; }
+            		if(data[i][j+1] == 1) { neighbours++; }
+
+            		if(data[i+1][j-1] == 1) { neighbours++; }
+            		if(data[i+1][j] == 1) { neighbours++; }
+            		if(data[i+1][j+1] == 1) { neighbours++; }
+			
+			// checking conditions for death and "birth"
+			if(data[i][j] == 1) {
+                		if(neighbours < 2 || neighbours > 3) {
+                    			nextData[i][j] = 0;
+                		}
+			} else {
+                		if(neighbours == 3) {
+                    			nextData[i][j] = 1;
+                		}
+            		}
+        	}
+    	}
+	
+	data = nextData;
 }
 
-void Game::calculateNeighbours() {
-    for(int i = 1; i < boardSize - 1; i++) {
-        for(int j = 1; j < boardSize - 1; j++) {
-            int neighbours = 0;
-            if(data[i-1][j-1] == 1) { neighbours++; }
-            if(data[i-1][j] == 1) { neighbours++; }
-            if(data[i-1][j+1] == 1) { neighbours++; }
-
-            if(data[i][j-1] == 1) { neighbours++; }
-            if(data[i][j+1] == 1) { neighbours++; }
-
-            if(data[i+1][j-1] == 1) { neighbours++; }
-            if(data[i+1][j] == 1) { neighbours++; }
-            if(data[i+1][j+1] == 1) { neighbours++; }
-
-            neighbourData[i][j] = neighbours;
-        }
-    }
-}
-
-void Game::printNeighbours() {
-    cout << "\n\n";
-    for(int i = 0; i < boardSize; ++i) {
-        cout << "\t";
-        for(int j = 0; j < boardSize; ++j) {
-            cout << setw(1) << neighbourData[i][j];
-        }
-        cout << "\n";
-    }
-}
