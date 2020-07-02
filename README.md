@@ -5,7 +5,7 @@
 
 ###### How to run:
 1) Download release folder
-2) Run GameOfLife.exe from release folder 
+2) Run GameOfLife.exe from release folder  
 or open .pro file in QtCreator, build and run game from there.
 
 ###### Versions:
