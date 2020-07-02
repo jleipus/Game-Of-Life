@@ -1,17 +1,12 @@
-#include <iostream>
+#include "game.h"
 
-#include "Game.h"
+#include <QApplication>
 
-using namespace std;
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
 
-int main(int argc, char *argv[]) {
+    Game window;
 
-	// initial board size and tickspeed are passed as console arguments
-	// default values are 10 and 10 ticks/s
-    if(argc > 1) {
-		Game g(atoi(argv[1]), atoi(argv[2]));
-	} else {
-		Game g(10, 10);
-	}
-    return 0;
+    return a.exec();
 }
