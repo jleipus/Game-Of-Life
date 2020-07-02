@@ -7,6 +7,8 @@
 #include <QPainter>
 #include <QTime>
 
+#include <iostream>
+
 Game::Game(QWidget *parent)
     : QWidget(parent){
 
@@ -26,13 +28,36 @@ void Game::timerEvent(QTimerEvent *e) {
     repaint();
 }
 
+void Game::mousePressEvent(QMouseEvent *e) {
+    Q_UNUSED(e);
+
+    int newCellX = this->mapFromGlobal(QCursor::pos()).x() / (CELL_SIZE + 1);
+    int newCellY = this->mapFromGlobal(QCursor::pos()).y() / (CELL_SIZE + 1);
+
+    if(newCellX <= SIZE && newCellY <= SIZE) {
+        if(data[newCellX][newCellY] == 1) {
+            data[newCellX][newCellY] = 0;
+        } else if(data[newCellX][newCellY] == 0) {
+            data[newCellX][newCellY] = 1;
+        }
+    }
+
+    repaint();
+}
+
+
 void Game::initGame() {
     QFrame *mainFrame = new QFrame(this);
     mainFrame->setFrameStyle(QFrame::Box);
 
+    fieldTop = mainFrame->geometry().top();
+    fieldLeft = mainFrame->geometry().left();
+    fieldWidth = mainFrame->geometry().width();
+    fieldHeight = mainFrame->geometry().height();
+
     QPushButton *plsBtn = new QPushButton("+", this);
     QPushButton *minBtn = new QPushButton("-", this);
-    speedLbl = new QPushButton("Speed: 10", this);
+    speedLbl = new QPushButton("Speed: 1 Cycles: 0", this);
     speedLbl->setFlat(true);
 
     this->resize(520, 560);
@@ -71,15 +96,22 @@ void Game::draw() {
     for(int i = 1; i < SIZE + 1; i++) {
         for(int j = 1; j < SIZE + 1; j++) {
             if(data[i][j] == 1) {
-                qp.drawRect(i*CELL_SIZE+1, j*CELL_SIZE+1, CELL_SIZE, CELL_SIZE);
+                int cellPosX = fieldLeft + i*(CELL_SIZE+1);
+                int cellPosY = fieldTop + j*(CELL_SIZE+1);
+
+                //if(cellPosX >= fieldLeft && cellPosX <= fieldLeft + fieldWidth) {
+                    //if(cellPosY >= fieldTop && cellPosY <= fieldTop + fieldHeight) {
+                       qp.drawRect(cellPosX, cellPosY, CELL_SIZE, CELL_SIZE);
+                    //}
+                //}
             }
         }
     }
 
     if(!paused) {
-        speedLbl->setText("Speed: " + QString::number(speed));
+        speedLbl->setText("Speed: " + QString::number(speed) + " Cycles: " + QString::number(cycles));
     } else {
-        speedLbl->setText("Paused");
+        speedLbl->setText("Paused Cycles: " + QString::number(cycles));
     }
 }
 
@@ -116,6 +148,7 @@ void Game::update() {
     }
 
     data = nextData;
+    cycles++;
 }
 
 void Game::OnPlus() {
