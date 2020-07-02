@@ -1,6 +1,8 @@
 # Conways Game Of Life
 [Conways Game Of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns) written in C++ with a Qt5 based GUI.
 
+![alt text](https://github.com/jleipus/Game-Of-Life/blob/master/screencap.png?raw=true)
+
 ###### How to run:
 1) Download release folder
 2) Run GameOfLife.exe from release folder 
