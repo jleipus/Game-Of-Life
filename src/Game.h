@@ -1,29 +1,46 @@
-#include <vector>
+#ifndef GAMEBOARD_H
+#define GAMEBOARD_H
 
-#ifndef GAME_H
-#define GAME_H
+#include <QWidget>
+#include <QPushButton>
 
-using namespace std;
+#include <array>
 
-class Game
+class Game : public QWidget
 {
-    public:
-        Game(int _boardSize, int _tickspeed);
-        virtual ~Game();
-		
-    private:
-        int boardSize;
-		int tickspeed;
+    //Q_OBJECT
 
-        vector < vector < int > > data; // need to replace with more memmory efficient and faster option
-        vector < vector < int > > nextData;
+public:
+    Game(QWidget *parent = 0);
 
-        void init();
-        void loop();
+protected:
+      void paintEvent(QPaintEvent *);
+      void timerEvent(QTimerEvent *);
 
-        void draw();
-        void update();
+private slots:
+    void OnPlus();
+    void OnMinus();
+    void Pause();
+
+private:
+    static const int SIZE = 50;
+    static const int CELL_SIZE = 10;
+
+    int timerId;
+    bool paused = false;
+    int speed = 10;
+
+    std::array<std::array<int, SIZE + 2>, SIZE + 2> data = {0}; // need to replace with more memmory efficient option
+    std::array<std::array<int, SIZE + 2>, SIZE + 2> nextData = {0};
+
+    QPushButton *speedLbl;
+
+    void initGame();
+    void loop();
+
+    void draw();
+    void update();
 
 };
 
-#endif // GAME_H
+#endif // GAMEBOARD_H
