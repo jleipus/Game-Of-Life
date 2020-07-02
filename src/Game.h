@@ -16,6 +16,7 @@ public:
 protected:
       void paintEvent(QPaintEvent *);
       void timerEvent(QTimerEvent *);
+      void mousePressEvent(QMouseEvent *e);
 
 private slots:
     void OnPlus();
@@ -26,9 +27,13 @@ private:
     static const int SIZE = 50;
     static const int CELL_SIZE = 10;
 
+    int fieldLeft, fieldTop;
+    int fieldWidth, fieldHeight;
+
     int timerId;
     bool paused = false;
-    int speed = 10;
+    int speed = 1;
+    int cycles = 0;
 
     std::array<std::array<int, SIZE + 2>, SIZE + 2> data = {0}; // need to replace with more memmory efficient option
     std::array<std::array<int, SIZE + 2>, SIZE + 2> nextData = {0};
