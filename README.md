@@ -15,3 +15,5 @@ v0: Basic C++ console application with predetermined starting value. Speed is se
 v1: Size and speed are specified through console arguments.
 
 v2: Added graphical interface using Qt5. Size is fixed at 50x50, speed starts at 10 t/s but can be adjusted. Clicking on speed pauses game.
+
+v3: Clicking on a cell changes its state. Added cycle counter. 
