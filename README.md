@@ -18,4 +18,4 @@ v2: Added graphical interface using Qt5. Size is fixed at 50x50, speed starts at
 
 v3: Clicking on a cell changes its state. Added cycle counter.
 
-v4: Size is now adjustable, field size and drawn view ar independent, many internal functionality changes, addded basic unit test for public functions.
+v4: Size is now adjustable, field size and drawn view ar independent, many internal functionality changes, addded basic units test for public functions.
