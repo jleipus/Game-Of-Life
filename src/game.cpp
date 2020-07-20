@@ -1,18 +1,21 @@
 #include "game.h"
+#include "ruleset.h"
+#include "testmethods.h"
 
 #include <QFrame>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QSpacerItem>
 #include <QPainter>
 #include <QTime>
-
 #include <iostream>
-#include <cassert>
 #include <thread>
 
 Game::Game(QWidget *parent)
     : QWidget(parent) {
+
+    testMethods::runTests();
 
     initGame();
 }
@@ -34,8 +37,8 @@ void Game::timerEvent(QTimerEvent *e) {
 void Game::mousePressEvent(QMouseEvent *e) {
     Q_UNUSED(e);
 
-    int newCellX = (this->mapFromGlobal(QCursor::pos()).x() - 11) / (CELL_SIZE + 1);
-    int newCellY = (this->mapFromGlobal(QCursor::pos()).y() - 11) / (CELL_SIZE + 1);
+    int newCellX = (this->mapFromGlobal(QCursor::pos()).x()) / (CELL_SIZE + 1) - 1;
+    int newCellY = (this->mapFromGlobal(QCursor::pos()).y()) / (CELL_SIZE + 1) - 1;
 
     field->changeCellValue(newCellX, newCellY);
 
@@ -54,28 +57,42 @@ void Game::initGame() {
     mainFrame = new QFrame(this);
     mainFrame->setFrameStyle(QFrame::Box);
 
-    QPushButton *plsBtn = new QPushButton("+", this);
-    QPushButton *minBtn = new QPushButton("-", this);
+    QPushButton *plsBtnSpeed = new QPushButton("+", this);
+    QPushButton *minBtnSpeed = new QPushButton("-", this);
     speedLbl = new QPushButton("Speed: 1 Cycles: 0", this);
     speedLbl->setFlat(true);
+
+    QPushButton *plsBtnSize = new QPushButton("+", this);
+    QPushButton *minBtnSize = new QPushButton("-", this);
+    sizeLbl = new QLabel(" Size: 50x50", this);
 
     this->resize(520, 560);
     this->setWindowTitle("Conways Game Of Life");
     this->show();
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    QHBoxLayout *hbox = new QHBoxLayout(this);
+    QHBoxLayout *hbox1 = new QHBoxLayout(this);
+    QHBoxLayout *hbox2 = new QHBoxLayout(this);
 
     vbox->addWidget(mainFrame);
-    hbox->addWidget(speedLbl, 1, Qt::AlignLeft);
-    hbox->addWidget(plsBtn, 1);
-    hbox->addWidget(minBtn, 1);
 
-    vbox->addLayout(hbox);
+    hbox1->addWidget(speedLbl, 1, Qt::AlignCenter);
+    hbox1->addWidget(plsBtnSpeed, 1);
+    hbox1->addWidget(minBtnSpeed, 1);
 
-    connect(plsBtn, &QPushButton::clicked, this, &Game::OnPlus);
-    connect(minBtn, &QPushButton::clicked, this, &Game::OnMinus);
+    hbox2->addWidget(sizeLbl, 1, Qt::AlignCenter);
+    hbox2->addWidget(plsBtnSize, 1);
+    hbox2->addWidget(minBtnSize, 1);
+
+    vbox->addLayout(hbox1);
+    vbox->addLayout(hbox2);
+
+    connect(plsBtnSpeed, &QPushButton::clicked, this, &Game::OnPlusSpeed);
+    connect(minBtnSpeed, &QPushButton::clicked, this, &Game::OnMinusSpeed);
     connect(speedLbl, &QPushButton::clicked, this, &Game::Pause);
+
+    connect(plsBtnSize, &QPushButton::clicked, this, &Game::OnPlusSize);
+    connect(minBtnSize, &QPushButton::clicked, this, &Game::OnMinusSize);
 
     updateFrameMeasurements();
 
@@ -92,7 +109,7 @@ void Game::update() {
 
     for(int i = 0; i < field->getFieldWidth(); i++) {
         for(int j = 0; j < field->getFieldHeight(); j++) {
-            nextField.setCell(i, j, getOutcome(field->getCell(i, j), getNeighbourCount(i, j)));
+            nextField.setCell(i, j, Ruleset::getOutcome(field->getCell(i, j), Ruleset::getNeighbourCount(i, j, field)));
         }
     }
 
@@ -124,6 +141,8 @@ void Game::drawUI() {
     } else {
         speedLbl->setText("Paused Cycles: " + QString::number(cycles));
     }
+
+    sizeLbl->setText("Size: " + QString::number(field->getFieldWidth()) + "x" + QString::number(field->getFieldHeight()));
 }
 
 void Game::updateFrameMeasurements() {
@@ -131,39 +150,6 @@ void Game::updateFrameMeasurements() {
     frameLeft = mainFrame->geometry().left();
     frameWidth = mainFrame->geometry().width();
     frameHeight = mainFrame->geometry().height();
-}
-
-int Game::getOutcome(int value, int neighbours) {
-    if(value == 1) {
-        if(neighbours < 2 || neighbours > 3) {
-            return 0;
-        }
-        else {
-            return 1;
-        }
-    } else {
-        if(neighbours == 3) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
-    }
-}
-
-int Game::getNeighbourCount(int x, int y) {
-    int n = 0;
-
-    for (int i = std::max(0, x - 1); i <= std::min(x + 1, field->getFieldWidth() - 1); i++) {
-        for (int j = std::max(0, y - 1); j <= std::min(y + 1, field->getFieldHeight() - 1); j++) {
-            if (i == x && j == y) {}
-            else {
-                n += field->getCell(i, j);
-            }
-        }
-    }
-
-    return n;
 }
 
 bool Game::isWithinFrame(int x, int y) { // returns the cell at (x,y) is within drawing frame
@@ -176,7 +162,7 @@ bool Game::isWithinFrame(int x, int y) { // returns the cell at (x,y) is within 
     return false;
 }
 
-void Game::OnPlus() {
+void Game::OnPlusSpeed() {
     if(!paused) {
         killTimer(timerId);
         speed++;
@@ -188,7 +174,7 @@ void Game::OnPlus() {
     }
 }
 
-void Game::OnMinus() {
+void Game::OnMinusSpeed() {
     if(!paused) {
         killTimer(timerId);
         if(speed > 1) {
@@ -210,39 +196,22 @@ void Game::Pause() {
     }
 }
 
-// UNIT TESTS
+void Game::OnPlusSize() {
+    int size = field->getFieldWidth();
 
-void Game::testGetOutcome() {
-    assert(getOutcome(1, 1) == 0);
-    assert(getOutcome(1, 2) == 1);
-    assert(getOutcome(1, 4) == 0);
-    assert(getOutcome(0, 3) == 1);
+    if(size < GameField::MAX_FIELD_SIZE) {
+        size += 1;
+        field->resize(size);
+        repaint();
+    }
 }
 
-void Game::testGetNeighbourCount() {
-    GameField testField(2);
-    testField.setCell(0, 0, 1);
-    testField.setCell(0, 1, 1);
-    testField.setCell(1, 0, 1);
-    assert(testField.getCell(1, 1) == 3);
-}
+void Game::OnMinusSize() {
+    int size = field->getFieldWidth();
 
-void Game::testResize() {
-    GameField testField;
-    testField.resize(1, 2);
-    assert(testField.getFieldWidth() == 1 && testField.getFieldHeight() == 2);
-}
-
-void Game::testCopy() {
-    GameField test1(1);
-    test1.setCell(0, 0, 1);
-    GameField test2 = test1;
-    assert(test2.getCell(0, 0) == 1);
-}
-
-void Game::testChangeCellValue() {
-    GameField testField(1);
-    testField.setCell(0, 0, 1);
-    testField.changeCellValue(0, 0);
-    assert(testField.getCell(0, 0) == 0);
+    if(size > 1) {
+        size -= 1;
+        field->resize(size);
+        repaint();
+    }
 }

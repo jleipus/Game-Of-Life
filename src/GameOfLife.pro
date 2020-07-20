@@ -18,11 +18,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     game.cpp \
     gamefield.cpp \
-    main.cpp
+    main.cpp \
+    ruleset.cpp \
+    testmethods.cpp
 
 HEADERS += \
     game.h \
-    gamefield.h
+    gamefield.h \
+    ruleset.h \
+    testmethods.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

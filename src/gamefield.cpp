@@ -71,7 +71,7 @@ void GameField::copy(const GameField &f2) {
 }
 
 void GameField::changeCellValue(int x, int y) {
-    if(x > 0 && x < this->getFieldWidth() && y > 0 && y < this->getFieldHeight()) {
+    if(x >= 0 && x < this->getFieldWidth() && y >= 0 && y < this->getFieldHeight()) {
         if(this->getCell(x, y) == 1) {
             this->setCell(x, y, 0);
         } else if(this->getCell(x, y) == 0) {

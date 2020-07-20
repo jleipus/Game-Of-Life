@@ -6,6 +6,9 @@
 
 class GameField {
 public:
+    static const int MAX_FIELD_SIZE = 500;
+    static const int DEAFULT_FIELD_SIZE = 50;
+
     GameField();
     GameField(int _size);
     GameField(int _width, int _height);
@@ -30,8 +33,6 @@ public:
     void printField();
 
 private:
-    static const int DEAFULT_FIELD_SIZE = 100;
-
     int width, height;
 
     std::vector < std::vector < bool > > data;

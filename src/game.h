@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QFrame>
+#include <QLabel>
 
 class Game : public QWidget {
     //Q_OBJECT
@@ -14,13 +15,6 @@ public:
     Game(QWidget *parent = 0);
     virtual ~Game() {}
 
-    // UNIT TESTS
-    void testGetOutcome();
-    void testGetNeighbourCount();
-
-    void testResize();
-    void testCopy();
-    void testChangeCellValue();
 
 protected:
       void paintEvent(QPaintEvent *);
@@ -29,9 +23,12 @@ protected:
       void resizeEvent(QResizeEvent *e);
 
 private slots:
-    void OnPlus();
-    void OnMinus();
+    void OnPlusSpeed();
+    void OnMinusSpeed();
     void Pause();
+
+    void OnPlusSize();
+    void OnMinusSize();
 
 private:
     static const int CELL_SIZE = 10;
@@ -47,6 +44,8 @@ private:
     GameField *field;
 
     QPushButton *speedLbl;
+    QLabel *sizeLbl;
+
     QFrame *mainFrame;
 
     void initGame();
@@ -60,8 +59,6 @@ private:
 
     void updateFrameMeasurements();
 
-    int getOutcome(int value, int neighbours);
-    int getNeighbourCount(int x, int y);
     bool isWithinFrame(int x, int y);
 };
 
