@@ -1,44 +1,52 @@
 #ifndef GAMEBOARD_H
 #define GAMEBOARD_H
 
+#include "gamefield.h"
+
 #include <QWidget>
 #include <QPushButton>
+#include <QFrame>
+#include <QLabel>
 
-#include <array>
-
-class Game : public QWidget
-{
+class Game : public QWidget {
     //Q_OBJECT
 
 public:
     Game(QWidget *parent = 0);
+    virtual ~Game() {}
+
 
 protected:
       void paintEvent(QPaintEvent *);
       void timerEvent(QTimerEvent *);
       void mousePressEvent(QMouseEvent *e);
+      void resizeEvent(QResizeEvent *e);
 
 private slots:
-    void OnPlus();
-    void OnMinus();
+    void OnPlusSpeed();
+    void OnMinusSpeed();
     void Pause();
 
+    void OnPlusSize();
+    void OnMinusSize();
+
 private:
-    static const int SIZE = 50;
     static const int CELL_SIZE = 10;
 
-    int fieldLeft, fieldTop;
-    int fieldWidth, fieldHeight;
+    int frameLeft, frameTop;
+    int frameWidth, frameHeight;
 
     int timerId;
     bool paused = false;
     int speed = 1;
     int cycles = 0;
 
-    std::array<std::array<int, SIZE + 2>, SIZE + 2> data = {0}; // need to replace with more memmory efficient option
-    std::array<std::array<int, SIZE + 2>, SIZE + 2> nextData = {0};
+    GameField *field;
 
     QPushButton *speedLbl;
+    QLabel *sizeLbl;
+
+    QFrame *mainFrame;
 
     void initGame();
     void loop();
@@ -46,6 +54,12 @@ private:
     void draw();
     void update();
 
+    void drawField();
+    void drawUI();
+
+    void updateFrameMeasurements();
+
+    bool isWithinFrame(int x, int y);
 };
 
 #endif // GAMEBOARD_H
