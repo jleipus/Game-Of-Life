@@ -16,4 +16,6 @@ v1: Size and speed are specified through console arguments.
 
 v2: Added graphical interface using Qt5. Size is fixed at 50x50, speed starts at 10 t/s but can be adjusted. Clicking on speed pauses game.
 
-v3: Clicking on a cell changes its state. Added cycle counter. 
+v3: Clicking on a cell changes its state. Added cycle counter.
+
+v4: Size is now adjustable, field size and drawn view ar independent, many internal functionality changes, addded basic unit test for public functions.
