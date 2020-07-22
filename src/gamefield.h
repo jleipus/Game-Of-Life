@@ -2,7 +2,6 @@
 #define GAMEFIELD_H
 
 #include <vector>
-#include <QBitArray>
 
 class GameField {
 public:

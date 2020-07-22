@@ -1,6 +1,7 @@
 #include "ruleset.h"
 
 #include <iostream>
+#include <algorithm>
 
 Ruleset::Ruleset() {}
 

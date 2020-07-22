@@ -1,6 +1,5 @@
 #include "game.h"
 #include "ruleset.h"
-#include "testmethods.h"
 
 #include <QFrame>
 #include <QPushButton>
@@ -9,13 +8,12 @@
 #include <QSpacerItem>
 #include <QPainter>
 #include <QTime>
+
 #include <iostream>
 #include <thread>
 
 Game::Game(QWidget *parent)
     : QWidget(parent) {
-
-    testMethods::runTests();
 
     initGame();
 }
@@ -100,8 +98,11 @@ void Game::initGame() {
 }
 
 void Game::draw() {
-    drawField();
-    drawUI();
+    std::thread thread1(&Game::drawField, this);
+    std::thread thread2(&Game::drawUI, this);
+
+    thread1.join();
+    thread2.join();
 }
 
 void Game::update() {
@@ -117,7 +118,7 @@ void Game::update() {
     cycles++;
 }
 
-void Game::drawField() {
+bool Game::drawField() {
     QPainter painter(this);
     painter.setBrush(QBrush("#4c4c4c"));
 
@@ -133,9 +134,10 @@ void Game::drawField() {
             }
         }
     }
+    return true;
 }
 
-void Game::drawUI() {
+bool Game::drawUI() {
     if(!paused) {
         speedLbl->setText("Speed: " + QString::number(speed) + " Cycles: " + QString::number(cycles));
     } else {
@@ -143,6 +145,7 @@ void Game::drawUI() {
     }
 
     sizeLbl->setText("Size: " + QString::number(field->getFieldWidth()) + "x" + QString::number(field->getFieldHeight()));
+    return true;
 }
 
 void Game::updateFrameMeasurements() {

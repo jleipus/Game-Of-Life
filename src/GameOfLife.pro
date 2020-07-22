@@ -1,4 +1,4 @@
-QT       += core gui
+QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,14 +19,12 @@ SOURCES += \
     game.cpp \
     gamefield.cpp \
     main.cpp \
-    ruleset.cpp \
-    testmethods.cpp
+    ruleset.cpp
 
 HEADERS += \
     game.h \
     gamefield.h \
-    ruleset.h \
-    testmethods.h
+    ruleset.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
