@@ -54,8 +54,9 @@ private:
     void draw();
     void update();
 
-    bool drawField();
-    bool drawUI();
+    void drawField();
+    void drawPerimeter();
+    void drawUI();
 
     void updateFrameMeasurements();
 
