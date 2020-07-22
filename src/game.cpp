@@ -98,8 +98,9 @@ void Game::initGame() {
 }
 
 void Game::draw() {
-    std::thread thread1(&Game::drawField, this);
-    std::thread thread2(&Game::drawUI, this);
+    drawUI();
+    std::thread thread1(&Game::drawPerimeter, this);
+    std::thread thread2(&Game::drawField, this);
 
     thread1.join();
     thread2.join();
@@ -118,7 +119,7 @@ void Game::update() {
     cycles++;
 }
 
-bool Game::drawField() {
+void Game::drawField() {
     QPainter painter(this);
     painter.setBrush(QBrush("#4c4c4c"));
 
@@ -134,10 +135,31 @@ bool Game::drawField() {
             }
         }
     }
-    return true;
 }
 
-bool Game::drawUI() {
+void Game::drawPerimeter() {
+    QPainter painter(this);
+    painter.setBrush(QBrush("#267472"));
+
+    int topRightX = (field->getFieldWidth() + 1) * (CELL_SIZE + 1);
+    int topRightY = frameTop;
+
+    int bottomLeftX = frameLeft;
+    int bottomLeftY = (field->getFieldHeight() + 1) * (CELL_SIZE + 1);
+
+    int bottomRightX = topRightX;
+    int bottomRightY = bottomLeftY;
+
+    if(bottomRightX < frameLeft + frameWidth) {
+        painter.drawLine(topRightX, topRightY, bottomRightX, std::min(bottomRightY, frameLeft + frameWidth - 1));
+    }
+
+    if(bottomRightY < frameTop + frameHeight) {
+        painter.drawLine(bottomLeftX, bottomLeftY, std::min(bottomRightX, frameLeft + frameWidth - 1), bottomRightY);
+    }
+}
+
+void Game::drawUI() {
     if(!paused) {
         speedLbl->setText("Speed: " + QString::number(speed) + " Cycles: " + QString::number(cycles));
     } else {
@@ -145,7 +167,6 @@ bool Game::drawUI() {
     }
 
     sizeLbl->setText("Size: " + QString::number(field->getFieldWidth()) + "x" + QString::number(field->getFieldHeight()));
-    return true;
 }
 
 void Game::updateFrameMeasurements() {
