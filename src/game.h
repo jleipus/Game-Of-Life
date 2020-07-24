@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QFrame>
 #include <QLabel>
+#include <QLineEdit>
 
 class Game : public QWidget {
     //Q_OBJECT
@@ -30,6 +31,8 @@ private slots:
     void OnPlusSize();
     void OnMinusSize();
 
+    void OnChangeSize();
+
 private:
     static const int CELL_SIZE = 10;
 
@@ -44,7 +47,9 @@ private:
     GameField *field;
 
     QPushButton *speedLbl;
-    QLabel *sizeLbl;
+
+    QLineEdit *widthEdit;
+    QLineEdit *heightEdit;
 
     QFrame *mainFrame;
 
@@ -54,8 +59,9 @@ private:
     void draw();
     void update();
 
-    bool drawField();
-    bool drawUI();
+    void drawField();
+    void drawPerimeter();
+    void drawUI();
 
     void updateFrameMeasurements();
 
