@@ -8,6 +8,7 @@
 #include <QSpacerItem>
 #include <QPainter>
 #include <QTime>
+#include <QLineEdit>
 
 #include <iostream>
 #include <thread>
@@ -60,9 +61,9 @@ void Game::initGame() {
     speedLbl = new QPushButton("Speed: 1 Cycles: 0", this);
     speedLbl->setFlat(true);
 
-    QPushButton *plsBtnSize = new QPushButton("+", this);
-    QPushButton *minBtnSize = new QPushButton("-", this);
-    sizeLbl = new QLabel(" Size: 50x50", this);
+    widthEdit = new QLineEdit("50", this);
+    heightEdit = new QLineEdit("50", this);
+    QPushButton *changeSizeBtn = new QPushButton("Change size", this);
 
     this->resize(520, 560);
     this->setWindowTitle("Conways Game Of Life");
@@ -74,13 +75,15 @@ void Game::initGame() {
 
     vbox->addWidget(mainFrame);
 
+    updateFrameMeasurements();
+
     hbox1->addWidget(speedLbl, 1, Qt::AlignCenter);
     hbox1->addWidget(plsBtnSpeed, 1);
     hbox1->addWidget(minBtnSpeed, 1);
 
-    hbox2->addWidget(sizeLbl, 1, Qt::AlignCenter);
-    hbox2->addWidget(plsBtnSize, 1);
-    hbox2->addWidget(minBtnSize, 1);
+    hbox2->addWidget(widthEdit, 1);
+    hbox2->addWidget(heightEdit, 1);
+    hbox2->addWidget(changeSizeBtn, 1);
 
     vbox->addLayout(hbox1);
     vbox->addLayout(hbox2);
@@ -89,21 +92,18 @@ void Game::initGame() {
     connect(minBtnSpeed, &QPushButton::clicked, this, &Game::OnMinusSpeed);
     connect(speedLbl, &QPushButton::clicked, this, &Game::Pause);
 
-    connect(plsBtnSize, &QPushButton::clicked, this, &Game::OnPlusSize);
-    connect(minBtnSize, &QPushButton::clicked, this, &Game::OnMinusSize);
-
-    updateFrameMeasurements();
+    connect(changeSizeBtn, &QPushButton::clicked, this, &Game::OnChangeSize);
 
     timerId = startTimer(1000 / speed);
 }
 
 void Game::draw() {
-    drawUI();
-    std::thread thread1(&Game::drawPerimeter, this);
-    std::thread thread2(&Game::drawField, this);
+    drawPerimeter();
 
-    thread1.join();
-    thread2.join();
+    drawUI();
+    std::thread t(&Game::drawField, this);
+
+    t.join();
 }
 
 void Game::update() {
@@ -139,23 +139,17 @@ void Game::drawField() {
 
 void Game::drawPerimeter() {
     QPainter painter(this);
-    painter.setBrush(QBrush("#267472"));
+    painter.setBrush(QBrush("#acacac"));
 
     int topRightX = (field->getFieldWidth() + 1) * (CELL_SIZE + 1);
-    int topRightY = frameTop;
-
-    int bottomLeftX = frameLeft;
     int bottomLeftY = (field->getFieldHeight() + 1) * (CELL_SIZE + 1);
 
-    int bottomRightX = topRightX;
-    int bottomRightY = bottomLeftY;
-
-    if(bottomRightX < frameLeft + frameWidth) {
-        painter.drawLine(topRightX, topRightY, bottomRightX, std::min(bottomRightY, frameLeft + frameWidth - 1));
+    if(topRightX < frameLeft + frameWidth) {
+        painter.drawLine(topRightX, frameTop, topRightX, std::min(bottomLeftY, frameTop + frameHeight - 1));
     }
 
-    if(bottomRightY < frameTop + frameHeight) {
-        painter.drawLine(bottomLeftX, bottomLeftY, std::min(bottomRightX, frameLeft + frameWidth - 1), bottomRightY);
+    if(bottomLeftY < frameTop + frameHeight) {
+        painter.drawLine(frameLeft, bottomLeftY, std::min(topRightX, frameLeft + frameWidth - 1), bottomLeftY);
     }
 }
 
@@ -165,8 +159,6 @@ void Game::drawUI() {
     } else {
         speedLbl->setText("Paused Cycles: " + QString::number(cycles));
     }
-
-    sizeLbl->setText("Size: " + QString::number(field->getFieldWidth()) + "x" + QString::number(field->getFieldHeight()));
 }
 
 void Game::updateFrameMeasurements() {
@@ -237,5 +229,21 @@ void Game::OnMinusSize() {
         size -= 1;
         field->resize(size);
         repaint();
+    }
+}
+
+void Game::OnChangeSize() {
+    int newWidth = widthEdit->text().toInt();
+    int newHeight = heightEdit->text().toInt();
+
+    if(newWidth > 0 && newWidth <= GameField::MAX_FIELD_SIZE) {
+        if(newHeight > 0 && newHeight <= GameField::MAX_FIELD_SIZE) {
+            field->resize(newWidth, newHeight);
+
+            widthEdit->setText(QString::number(field->getFieldWidth()));
+            heightEdit->setText(QString::number(field->getFieldHeight()));
+
+            repaint();
+        }
     }
 }
