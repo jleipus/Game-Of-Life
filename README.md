@@ -13,16 +13,16 @@ All unit tests are written in the [tests.cpp](https://github.com/jleipus/Game-Of
 
 ###### Versions:
 
-v0: Basic C++ console application with predetermined starting value. Speed is set to 10 ticks/s.
+v1.0: Basic C++ console application with predetermined starting value. Speed is set to 10 ticks/s.
 
-v1: Size and speed are specified through console arguments.
+v1.1: Size and speed are specified through console arguments.
 
-v2: Added graphical interface using Qt5. Size is fixed at 50x50, speed starts at 10 t/s but can be adjusted. Clicking on speed pauses game.
+v1.2: Added graphical interface using Qt5. Size is fixed at 50x50, speed starts at 10 t/s but can be adjusted. Clicking on speed pauses game.
 
-v3: Clicking on a cell changes its state. Added cycle counter.
+v1.3: Clicking on a cell changes its state. Added cycle counter.
 
-v4: Size is now adjustable, field size and drawn view ar independent, many internal functionality changes, addded basic units test for public functions.
+v1.4: Size is now adjustable, field size and drawn view ar independent, many internal functionality changes, addded basic units test for public functions.
 
-v5: Unit tests now use the catch2 framework, added multithreading for GUI functions.
+v1.5: Unit tests now use the catch2 framework, added multithreading for GUI functions.
 
-v5.5: Added lines showing edge of field, size is changed with input fields instead of buttons.
+v1.5.5: Added lines showing edge of field, size is changed with input fields instead of buttons.
