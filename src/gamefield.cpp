@@ -86,12 +86,12 @@ void GameField::clearField() {
     }
 }
 
-void GameField::printField() {
+void GameField::printField(std::ostream& stream) {
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
-            std::cout << data[i][j] << " ";
+            stream << data[i][j];
         }
-        std::cout << std::endl;
+        stream << std::endl;
     }
 }
 

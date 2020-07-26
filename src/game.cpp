@@ -9,6 +9,9 @@
 #include <QPainter>
 #include <QTime>
 #include <QLineEdit>
+#include <QMenuBar>
+#include <QTextStream>
+#include <QFile>
 
 #include <iostream>
 #include <thread>
@@ -36,8 +39,8 @@ void Game::timerEvent(QTimerEvent *e) {
 void Game::mousePressEvent(QMouseEvent *e) {
     Q_UNUSED(e);
 
-    int newCellX = (this->mapFromGlobal(QCursor::pos()).x()) / (CELL_SIZE + 1) - 1;
-    int newCellY = (this->mapFromGlobal(QCursor::pos()).y()) / (CELL_SIZE + 1) - 1;
+    int newCellX = (this->mapFromGlobal(QCursor::pos()).x() - frameLeft) / (CELL_SIZE + 1);
+    int newCellY = (this->mapFromGlobal(QCursor::pos()).y() - frameTop) / (CELL_SIZE + 1);
 
     field->changeCellValue(newCellX, newCellY);
 
@@ -53,6 +56,14 @@ void Game::resizeEvent(QResizeEvent *e) {
 void Game::initGame() {
     field = new GameField();
 
+    this->resize(520, 560);
+    this->setWindowIcon(QIcon(":/icon.png"));
+    this->setWindowTitle("Conways Game Of Life");
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    QHBoxLayout *hbox1 = new QHBoxLayout(this);
+    QHBoxLayout *hbox2 = new QHBoxLayout(this);
+
     mainFrame = new QFrame(this);
     mainFrame->setFrameStyle(QFrame::Box);
 
@@ -65,17 +76,25 @@ void Game::initGame() {
     heightEdit = new QLineEdit("50", this);
     QPushButton *changeSizeBtn = new QPushButton("Change size", this);
 
-    this->resize(520, 560);
-    this->setWindowTitle("Conways Game Of Life");
-    this->show();
+    QMenuBar *menuBar = new QMenuBar();
 
-    QVBoxLayout *vbox = new QVBoxLayout(this);
-    QHBoxLayout *hbox1 = new QHBoxLayout(this);
-    QHBoxLayout *hbox2 = new QHBoxLayout(this);
+    QMenu *fileMenu = new QMenu("File");
+    QMenu *editMenu = new QMenu("Edit");
+
+    QAction *save = new QAction("Save", this);
+    QAction *load = new QAction("Load", this);
+    QAction *clear = new QAction("Clear", this);
+
+    menuBar->addMenu(fileMenu);
+    fileMenu->addAction(save);
+    fileMenu->addAction(load);
+
+    menuBar->addMenu(editMenu);
+    editMenu->addAction(clear);
+
+    this->layout()->setMenuBar(menuBar);
 
     vbox->addWidget(mainFrame);
-
-    updateFrameMeasurements();
 
     hbox1->addWidget(speedLbl, 1, Qt::AlignCenter);
     hbox1->addWidget(plsBtnSpeed, 1);
@@ -93,6 +112,14 @@ void Game::initGame() {
     connect(speedLbl, &QPushButton::clicked, this, &Game::Pause);
 
     connect(changeSizeBtn, &QPushButton::clicked, this, &Game::OnChangeSize);
+
+    connect(save, &QAction::triggered, this, &Game::OnSave);
+    connect(load, &QAction::triggered, this, &Game::OnLoad);
+    connect(clear, &QAction::triggered, this, &Game::OnClear);
+
+    updateFrameMeasurements();
+
+    this->show();
 
     timerId = startTimer(1000 / speed);
 }
@@ -141,8 +168,8 @@ void Game::drawPerimeter() {
     QPainter painter(this);
     painter.setBrush(QBrush("#acacac"));
 
-    int topRightX = (field->getFieldWidth() + 1) * (CELL_SIZE + 1);
-    int bottomLeftY = (field->getFieldHeight() + 1) * (CELL_SIZE + 1);
+    int topRightX = (field->getFieldWidth() * (CELL_SIZE + 1)) + frameLeft;
+    int bottomLeftY = (field->getFieldHeight() * (CELL_SIZE + 1)) + frameTop;
 
     if(topRightX < frameLeft + frameWidth) {
         painter.drawLine(topRightX, frameTop, topRightX, std::min(bottomLeftY, frameTop + frameHeight - 1));
@@ -212,26 +239,6 @@ void Game::Pause() {
     }
 }
 
-void Game::OnPlusSize() {
-    int size = field->getFieldWidth();
-
-    if(size < GameField::MAX_FIELD_SIZE) {
-        size += 1;
-        field->resize(size);
-        repaint();
-    }
-}
-
-void Game::OnMinusSize() {
-    int size = field->getFieldWidth();
-
-    if(size > 1) {
-        size -= 1;
-        field->resize(size);
-        repaint();
-    }
-}
-
 void Game::OnChangeSize() {
     int newWidth = widthEdit->text().toInt();
     int newHeight = heightEdit->text().toInt();
@@ -246,4 +253,50 @@ void Game::OnChangeSize() {
             repaint();
         }
     }
+}
+
+void Game::OnSave() {
+    std::ofstream out("out");
+
+    if(out.is_open()) {
+        field->printField(out);
+    } else {
+        qWarning("Could not open file");
+    }
+
+    out.close();
+}
+
+void Game::OnLoad() {
+    QFile file("in");
+
+    if(!file.open(QIODevice::ReadOnly)) {
+        qWarning("Cannot open file for reading");
+        return;
+    }
+
+    QTextStream in(&file);
+    int y = 0;
+
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+
+        if(y < field->getFieldHeight()) {
+            for(int x = 0; x < line.length(); x++) {
+                if(x < field->getFieldWidth()) {
+                    int value = line.at(x).unicode() - '0';
+                    field->setCell(x, y, value);
+                }
+            }
+        }
+        y++;
+    }
+
+    repaint();
+    file.close();
+}
+
+void Game::OnClear() {
+    field->clearField();
+    repaint();
 }

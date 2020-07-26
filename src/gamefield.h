@@ -2,6 +2,8 @@
 #define GAMEFIELD_H
 
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 class GameField {
 public:
@@ -29,7 +31,7 @@ public:
     void changeCellValue(int x, int y);
 
     void clearField();
-    void printField();
+    void printField(std::ostream& stream);
 
 private:
     int width, height;
