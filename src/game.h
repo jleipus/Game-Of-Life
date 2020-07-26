@@ -28,10 +28,11 @@ private slots:
     void OnMinusSpeed();
     void Pause();
 
-    void OnPlusSize();
-    void OnMinusSize();
-
     void OnChangeSize();
+
+    void OnSave();
+    void OnLoad();
+    void OnClear();
 
 private:
     static const int CELL_SIZE = 10;
