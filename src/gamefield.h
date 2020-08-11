@@ -2,41 +2,47 @@
 #define GAMEFIELD_H
 
 #include <vector>
-#include <iostream>
-#include <fstream>
+
+#include "cell.h"
 
 class GameField {
 public:
     static const int MAX_FIELD_SIZE = 500;
-    static const int DEAFULT_FIELD_SIZE = 50;
+    static const int DEFAULT_FIELD_SIZE = 50;
 
     GameField();
-    GameField(int _size);
-    GameField(int _width, int _height);
-    GameField(const GameField &f2);
 
     virtual ~GameField() {}
 
-    int getCell(int x, int y) const;
-    void setCell(int x, int y, int value);
+    bool getCellValue(int x, int y) const;
+    void setCellValue(int x, int y, bool val);
+
+    int getCellNeighbours(int x, int y);
+    void setCellNeighbours(int x, int y, int n);
 
     int getFieldWidth();
     int getFieldHeight();
 
-    void resize(int _size);
-    void resize(int _width, int _height);
+    Rectangle getRectangle();
+    Rectangle getCellRectangle(int x, int y);
 
-    void copy(const GameField &f2);
+    bool cellShouldBeDrawn(int x, int y, int frameRight, int frameBottom);
 
-    void changeCellValue(int x, int y);
+    void resize(int newWidth, int newHeight);
 
-    void clearField();
-    void printField(std::ostream& stream);
+    void printField();
 
 private:
-    int width, height;
+    // size of field in cells
+    int width = 0;
+    int height = 0;
 
-    std::vector < std::vector < bool > > data;
+    // cooridnates of field
+    int left, right;
+    int top, bottom;
+
+    // vector of pointers to Cell objects
+    std::vector < std::vector < Cell* > > data;
 
 };
 
