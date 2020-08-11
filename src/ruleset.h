@@ -7,7 +7,7 @@ class Ruleset {
 public:
     Ruleset();
 
-    static int getOutcome(int value, int neighbours);
+    static bool getOutcome(bool value, int neighbours);
     static int getNeighbourCount(int x, int y, GameField *field);
 };
 

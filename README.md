@@ -11,15 +11,6 @@ or open [.pro](https://github.com/jleipus/Game-Of-Life/blob/master/src/GameOfLif
 ###### Unit test:
 All unit tests are written in the [tests.cpp](https://github.com/jleipus/Game-Of-Life/blob/master/src/tests/tests.cpp) file. To run the the tests, either run the [executable file](https://github.com/jleipus/Game-Of-Life/blob/master/src/tests/runTests.exe), or, if changes to the code have been made, open the [src/tests](https://github.com/jleipus/Game-Of-Life/blob/master/src/tests) folder in your console, type "*g++ tests.cpp catch.hpp ../gamefield.cpp ../ruleset.cpp -o runTests*" and then run the executable.
 
-###### How to save/load data:
-Data can be loaded from "in" file stored at same location as executable file. Data is stored in "out" respectively. Supported input data format example:  
-```
-00000  
-00110  
-01100  
-00100  
-00000  
-```
 ##### Versions:
 
 **v1.0:** Basic C++ console application with predetermined starting value. Speed is set to 10 ticks/s.
@@ -37,3 +28,5 @@ Data can be loaded from "in" file stored at same location as executable file. Da
 **v1.5.5:** Added lines showing edge of field, size is changed with input fields instead of buttons.
 
 **v1.5.6:** Added menubar with clear, save and load options. Can save and load field data to text files.
+
+**v1.6:** Removed menubar. Rewrote majority of code. QT dependent functions are all in one UI class, all game logic is split to other classes.

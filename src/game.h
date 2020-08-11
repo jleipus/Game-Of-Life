@@ -3,70 +3,30 @@
 
 #include "gamefield.h"
 
-#include <QWidget>
-#include <QPushButton>
-#include <QFrame>
-#include <QLabel>
-#include <QLineEdit>
-
-class Game : public QWidget {
-    //Q_OBJECT
-
+class Game {
 public:
-    Game(QWidget *parent = 0);
+    Game();
     virtual ~Game() {}
 
+    void update();
+    void draw();
 
-protected:
-      void paintEvent(QPaintEvent *);
-      void timerEvent(QTimerEvent *);
-      void mousePressEvent(QMouseEvent *e);
-      void resizeEvent(QResizeEvent *e);
+    int getSpeed();
+    int getCycles();
 
-private slots:
-    void OnPlusSpeed();
-    void OnMinusSpeed();
-    void Pause();
+    void setSpeed(int s);
 
-    void OnChangeSize();
+    void changeFieldSize(int newWidth, int newHeight);
+    void changeClickedOnCell(int x, int y); // changes the value of the cell that was clicked on
 
-    void OnSave();
-    void OnLoad();
-    void OnClear();
+    GameField* getField();
 
 private:
-    static const int CELL_SIZE = 10;
+    GameField *field;
 
-    int frameLeft, frameTop;
-    int frameWidth, frameHeight;
-
-    int timerId;
-    bool paused = false;
     int speed = 1;
     int cycles = 0;
 
-    GameField *field;
-
-    QPushButton *speedLbl;
-
-    QLineEdit *widthEdit;
-    QLineEdit *heightEdit;
-
-    QFrame *mainFrame;
-
-    void initGame();
-    void loop();
-
-    void draw();
-    void update();
-
-    void drawField();
-    void drawPerimeter();
-    void drawUI();
-
-    void updateFrameMeasurements();
-
-    bool isWithinFrame(int x, int y);
 };
 
 #endif // GAMEBOARD_H

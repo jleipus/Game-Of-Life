@@ -2,38 +2,27 @@
 
 #include <iostream>
 
-GameField::GameField()
-    : GameField(DEAFULT_FIELD_SIZE) {
+#define ALIVE true
+#define DEAD false
 
+GameField::GameField() {
+    resize(DEFAULT_FIELD_SIZE, DEFAULT_FIELD_SIZE);
 }
 
-GameField::GameField(int _size)
-    : GameField(_size, _size) {
+bool GameField::getCellValue(int x, int y) const {
+    return data[x][y]->getValue();
 }
 
-GameField::GameField(int _width, int _height) {
-    width = _width;
-    height = _height;
-
-    data.resize(width);
-    for(int i = 0; i < width; i++) {
-        data[i].resize(height);
-        std::fill(data[i].begin(), data[i].end(), 0);
-    }
+void GameField::setCellValue(int x, int y, bool val) {
+    data[x][y]->setValue(val);
 }
 
-GameField::GameField(const GameField &f2) {
-    width = f2.width;
-    height = f2.height;
-    data = f2.data;
+int GameField::getCellNeighbours(int x, int y) {
+    return data[x][y]->getNeighbours();
 }
 
-int GameField::getCell(int x, int y) const {
-    return data[x][y];
-}
-
-void GameField::setCell(int x, int y, int value) {
-    data[x][y] = value;
+void GameField::setCellNeighbours(int x, int y, int n) {
+    data[x][y]->setNeighbours(n);
 }
 
 int GameField::getFieldWidth() {
@@ -44,57 +33,66 @@ int GameField::getFieldHeight() {
     return height;
 }
 
-void GameField::resize(int _size) {
-    resize(_size, _size);
+Rectangle GameField::getRectangle() {
+    return Rectangle(left, right, top, bottom, right - left, bottom - top);
 }
 
-void GameField::resize(int _width, int _height) {
-    width = _width;
-    height = _height;
-
-    data.resize(width);
-    for(int i = 0; i < width; i++) {
-        data[i].resize(height);
-    }
+Rectangle GameField::getCellRectangle(int x, int y) {
+    return data[x][y]->getRectangle();
 }
 
-void GameField::copy(const GameField &f2) {
-    width = f2.width;
-    height = f2.height;
-    this->resize(width, height);
+bool GameField::cellShouldBeDrawn(int x, int y, int frameRight, int frameBottom) {
+    Rectangle rect = data[x][y]->getRectangle();
 
-    for(int i = 0; i < width; i++) {
-        for(int j = 0; j < height; j++) {
-            this->setCell(i, j, f2.getCell(i, j));
+    if(rect.left >= left && rect.right <= frameRight) {
+        if(rect.top >= top && rect.bottom <= frameBottom) {
+           if(data[x][y]->getValue() == 1) {
+                return true;
+           }
         }
     }
+
+    return false;
 }
 
-void GameField::changeCellValue(int x, int y) {
-    if(x >= 0 && x < this->getFieldWidth() && y >= 0 && y < this->getFieldHeight()) {
-        if(this->getCell(x, y) == 1) {
-            this->setCell(x, y, 0);
-        } else if(this->getCell(x, y) == 0) {
-            this->setCell(x, y, 1);
-        }
-    }
+void GameField::resize(int newWidth, int newHeight) {
+    if(newWidth <= MAX_FIELD_SIZE && newHeight <= MAX_FIELD_SIZE) {
+		data.resize(newWidth);
+		for(int i = 0; i < newWidth; i++) {
+			if(i < width) {
+				if(height < newHeight) {
+					for(int j = height; j < newHeight; j++) {
+						data[i].push_back(new Cell(i, j, DEAD));
+					}
+				} else {
+					data[i].resize(newHeight);
+				}
+			} else {
+				for(int j = 0; j < newHeight; j++) {
+					data[i].push_back(new Cell(i, j, DEAD));
+				}
+			}
+		}
+
+		width = newWidth;
+		height = newHeight;
+
+		left = 0;
+		right = width * (Cell::CELL_SIZE + 1) + left - 1;
+		top = 0;
+		bottom = height * (Cell::CELL_SIZE + 1) + top - 1;
+	}
 }
 
-void GameField::clearField() {
-    for(int i = 0; i < width; i++) {
-        std::fill(data[i].begin(), data[i].end(), 0);
-    }
-}
-
-void GameField::printField(std::ostream& stream) {
+void GameField::printField() {
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
-            stream << data[i][j];
+            if(getCellValue(i, j)) {
+                std::cout << 1;
+            } else {
+                std::cout << 0;
+            }
         }
-        stream << std::endl;
+        std::cout << std::endl;
     }
 }
-
-// UNIT TESTS
-
-

@@ -3,22 +3,25 @@
 #include <iostream>
 #include <algorithm>
 
+#define ALIVE true
+#define DEAD false
+
 Ruleset::Ruleset() {}
 
-int Ruleset::getOutcome(int value, int neighbours) {
-    if(value == 1) {
+bool Ruleset::getOutcome(bool value, int neighbours) {
+    if(value == ALIVE) {
         if(neighbours < 2 || neighbours > 3) {
-            return 0;
+            return DEAD;
         }
         else {
-            return 1;
+            return ALIVE;
         }
     } else {
         if(neighbours == 3) {
-            return 1;
+            return ALIVE;
         }
         else {
-            return 0;
+            return DEAD;
         }
     }
 }
@@ -31,7 +34,9 @@ int Ruleset::getNeighbourCount(int x, int y, GameField *field) {
         for (int j = std::max(0, y - radius); j <= std::min(y + radius, field->getFieldHeight() - 1); j++) {
             if (i == x && j == y) {}
             else {
-                n += field->getCell(i, j);
+                if(field->getCellValue(i, j)) {
+                    n++;
+                }
             }
         }
     }
