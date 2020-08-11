@@ -4,12 +4,10 @@
 ![alt text](https://github.com/jleipus/Game-Of-Life/blob/master/screencap.png?raw=true)
 
 ##### How to run:
-1) Download [release](https://github.com/jleipus/Game-Of-Life/blob/master/release) folder
-2) Run [GameOfLife.exe](https://github.com/jleipus/Game-Of-Life/blob/master/release/GameOfLife.exe) from release folder  
-or open [.pro](https://github.com/jleipus/Game-Of-Life/blob/master/src/GameOfLife.pro) file in QtCreator, build and run game from there.
+Open [.pro](https://github.com/jleipus/Game-Of-Life/blob/master/src/GameOfLife.pro) file in QtCreator, build and run game from there.
 
 ###### Unit test:
-All unit tests are written in the [tests.cpp](https://github.com/jleipus/Game-Of-Life/blob/master/src/tests/tests.cpp) file. To run the the tests, either run the [executable file](https://github.com/jleipus/Game-Of-Life/blob/master/src/tests/runTests.exe), or, if changes to the code have been made, open the [src/tests](https://github.com/jleipus/Game-Of-Life/blob/master/src/tests) folder in your console, type "*g++ tests.cpp catch.hpp ../gamefield.cpp ../ruleset.cpp -o runTests*" and then run the executable.
+All unit tests are written in the [tests.cpp](https://github.com/jleipus/Game-Of-Life/blob/master/src/tests/tests.cpp) file. To run the the tests, compile the required files and run the executable.
 
 ##### Versions:
 
